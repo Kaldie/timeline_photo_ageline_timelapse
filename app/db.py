@@ -25,6 +25,18 @@ CREATE TABLE IF NOT EXISTS choices (     -- survives re-renders
   rejected TEXT DEFAULT '[]',            -- json list of rejected face ids
   manual_path TEXT                       -- user-added photo
 );
+CREATE TABLE IF NOT EXISTS photo_embeddings (  -- generic (similarity) mode
+  photo_id INTEGER PRIMARY KEY REFERENCES photos(id),
+  vector BLOB,             -- float32[512] CLIP embedding, whole image
+  is_seed INTEGER DEFAULT 0,
+  match_score REAL
+);
+CREATE TABLE IF NOT EXISTS gchoices (     -- generic mode's choices, survives re-renders
+  bucket TEXT PRIMARY KEY,
+  photo_id INTEGER,                      -- chosen photo, NULL = empty slot
+  rejected TEXT DEFAULT '[]',            -- json list of rejected photo ids
+  manual_path TEXT                       -- user-added photo
+);
 """
 
 def connect():

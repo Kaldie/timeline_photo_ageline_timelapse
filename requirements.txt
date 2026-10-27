@@ -5,6 +5,6 @@ opencv-python-headless
 insightface
 onnxruntime-gpu
 gradio
-# Sunday: background similarity + interpolation
-# torch
-# open_clip_torch
+torch
+open_clip_torch
+# Later: RIFE interpolation

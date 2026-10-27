@@ -15,5 +15,12 @@ EYE_Y = 0.40                    # eyes at 40% from top
 EYE_DISTANCE = 0.22             # eye distance as fraction of width
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".heic", ".webp"}
 
+# Generic (similarity) mode
+CLIP_MODEL = "ViT-B-32"
+CLIP_PRETRAINED = "openai"
+CLIP_BATCH_SIZE = 64
+SIM_MATCH_THRESHOLD = 0.60      # cosine similarity to nearest seed (tune!)
+SIM_RESEED_THRESHOLD = 0.75     # matches above this become new seeds
+
 for d in (CACHE_DIR, THUMB_DIR, RENDER_DIR):
     d.mkdir(parents=True, exist_ok=True)
