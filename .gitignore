@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+data/takeout/*
+data/cache/*
+!data/**/.gitkeep

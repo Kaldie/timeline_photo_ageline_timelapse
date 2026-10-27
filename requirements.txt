@@ -1,0 +1,10 @@
+# Pin versions once the first build works on your GPU.
+numpy
+pillow
+opencv-python-headless
+insightface
+onnxruntime-gpu
+gradio
+# Sunday: background similarity + interpolation
+# torch
+# open_clip_torch

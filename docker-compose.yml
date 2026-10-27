@@ -1,0 +1,14 @@
+services:
+  timelinephoto:
+    build: .
+    ports: ["7860:7860"]
+    volumes:
+      - ./data/takeout:/data/takeout:ro   # unzipped Google Takeout album
+      - ./data/cache:/data/cache          # index, thumbnails, renders
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
