@@ -1,10 +1,9 @@
-# Pin versions once the first build works on your GPU.
-numpy
-pillow
-opencv-python-headless
-insightface
-onnxruntime-gpu
-gradio
-torch
-open_clip_torch
+# torch installed separately in Dockerfile (needs the cu124 wheel index)
+numpy==1.26.4
+pillow==10.4.0
+opencv-python-headless==4.10.0.84
+insightface==0.7.3
+onnxruntime-gpu==1.19.2
+gradio==4.44.1
+open_clip_torch==2.26.1
 # Later: RIFE interpolation
