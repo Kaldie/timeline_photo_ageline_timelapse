@@ -23,6 +23,15 @@ Since March 31, 2025 the Library API's read-only scope is gone; apps can only se
 
 We don't rely on Google to pre-filter by child at all; that's what the clustering + seed step below is for. Fallback if a full export is too large: Takeout's per-year folders, processed one year at a time.
 
+### Getting the photos together
+
+If both parents shoot/upload photos, the kids' photos are split across two Google accounts. Pull them into one place before exporting:
+
+1. **Turn on Partner Sharing** (each parent, in the other's Photos app): Settings → Partner sharing → pick partner → share either the whole library or "photos of specific people" (rough pre-filter only — inherits the same broken face grouping, don't rely on it for precision, just use it to avoid missing a parent's photos entirely).
+2. Once partner-shared photos land in one account's library (or just use whichever account has the most complete library as the export source), run Takeout from **that** account.
+3. **Takeout settings:** select Google Photos only, choose a zip size that fits your connection/disk (2 GB chunks are safe), .zip format. Shared/partner photos appear in the exporting account's Takeout once sharing is active — confirm with a quick manifest check (count of files) before relying on it as the full source.
+4. If photos still live on a device only (never uploaded), back those up separately — Takeout only exports what's already in Google Photos.
+
 ## Pipeline
 
 Cluster first, then let the user pick which cluster is which kid, instead of trying to match a single child's face directly against the whole broad export — this is the part Google's People view gets wrong with two kids.
@@ -37,6 +46,17 @@ Cluster first, then let the user pick which cluster is which kid, instead of try
    - background similarity to the neighbouring frames (scene embedding of the image with the person masked out)
 7. **Align.** Use face landmarks to rotate, scale and crop each full-resolution frame so the eyes land in the same spot.
 8. **Render.** Output MP4 with a **smoothness slider**: hard cut → crossfade → full frame interpolation between photos. Frame duration and an optional date stamp are adjustable.
+
+## Generic mode (non-kid subjects)
+
+Same app, different subject: seeds + similarity search over a local folder, no face detection required. Covers things like "all my sunset photos" → timelapse.
+
+- **Mode toggle** in the UI: `Face match` (current kid pipeline) vs `Similarity match` (generic).
+- **Input folder picker:** point at any local folder (e.g. `/data/photos`) instead of a Takeout export — no Google ingest, no indexing of capture-time sidecars required (EXIF/file date only).
+- **Seed picker:** same widget, but instead of clicking a face, the user just picks 3–5 example photos (whole image) of the thing they want — sunsets, a pet, a location, whatever.
+- **Match:** CLIP image embeddings (already in the stack for background similarity) on the whole photo instead of a masked/person-only crop; rank all photos in the folder by similarity to the seed set, same nearest-seed walk as face matching but without the face detector step.
+- **Bucket/Select/Align/Render:** unchanged, except **Align** is skipped for generic mode (no eye landmarks to align to) — frames go straight to the frame picker as-is, optionally with a simple center-crop to a common aspect ratio.
+- **Review loop:** identical (throw out / add / re-render), just no "wrong kid" case — just "not a good match."
 
 ## Review loop
 
@@ -59,7 +79,7 @@ One Python Docker image with GPU access, a local SQLite index and a Gradio web U
 | Frame interpolation | RIFE |
 | Video encoding | ffmpeg |
 | Storage | SQLite for the index, scores and user choices; volumes for `/data/takeout` and `/data/cache` |
-| UI | Gradio: seed picker, frame grid, slider, render button |
+| UI | Gradio: mode toggle, local folder picker, seed picker, frame grid, slider, render button |
 
 Open question: which GPU and how much VRAM? That decides batch sizes and how fast interpolation renders.
 
